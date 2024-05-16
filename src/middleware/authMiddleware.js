@@ -12,8 +12,7 @@ const authMiddleware = (req, res, next) => {
                     message: 'The authentication',
                 });
             }
-            const { payload } = user;
-            if (payload?.isAdmin) {
+            if (user?.isAdmin) {
                 next();
             } else {
                 return res.status(400).json({
@@ -41,8 +40,7 @@ const authUserMiddleware = (req, res, next) => {
                     message: 'The authentication',
                 });
             }
-            const { payload } = user;
-            if (payload?.isAdmin || payload?.id === userId) {
+            if (user?.isAdmin || user?.id === userId) {
                 next();
             } else {
                 return res.status(400).json({

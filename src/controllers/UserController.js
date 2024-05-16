@@ -9,7 +9,7 @@ const createUser = async (req, res) => {
       if (!email || !password || !confirmPassword) {
           return res.status(200).json({
               status: 'ERR',
-              message: ''
+              message: 'thiếu thông tin'
           })
       } else if (!isCheckEmail) {
           return res.status(200).json({
@@ -23,6 +23,7 @@ const createUser = async (req, res) => {
           })
       }
       const response = await UserService.createUser(req.body)
+      
       return res.status(200).json(response)
   } catch (e) {
       return res.status(404).json({
@@ -33,7 +34,7 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, phone } = req.body;
+    const { name, email, password, confirmPassword, phone,nickname } = req.body;
     const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
     const isCheckEmail = reg.test(email);
     if ( !email || !password ) {
@@ -49,7 +50,13 @@ const loginUser = async (req, res) => {
     } 
 
     const response = await UserService.loginUser(req.body);
-    return res.status(200).json(response);
+    const {refresh_token, ...newResponse} = response
+    res.cookie('refresh_token',refresh_token, {
+      httpOnly:true,
+      secucre: false,
+      samesite: 'strict'
+    })
+    return res.status(200).json(newResponse);
   } catch (e) {
     return res.status(404).json({
       message: e,
@@ -57,10 +64,11 @@ const loginUser = async (req, res) => {
   }
 };
 
+
+
 const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log("userId", userId);
     const data = req.body;
     if (!userId) {
       return res.status(200).json({
@@ -134,16 +142,17 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
-      if (!req.headers.token) {
-          return res.status(400).json({
+    const token = req.cookies.refresh_token
+      if (!token) {
+          return res.status(200).json({
               status: 'ERR',
-              message: 'Token is required in headers'
+              message: 'The Token is required '
           });
       }
       
-      const token = req.headers.token.split(' ')[1];
       const response = await jwtServices.refreshTokenjwtService(token);
       return res.status(200).json(response);
+     
   } catch (e) {
       console.error(e);
       if (e.name === 'JsonWebTokenError') {
@@ -165,6 +174,25 @@ const refreshToken = async (req, res) => {
   }
 };
 
+const logoutUser = (req, res) => {
+  try {
+    res.clearCookie('refresh_token', { path: '/' });
+
+    // Xóa cookie 'token'
+    res.clearCookie('token', { path: '/' });
+
+    return res.status(200).json({
+      status: 'OK',
+      message: 'Logout successfully'
+    });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    return res.status(500).json({
+      status: 'ERR',
+      message: 'Failed to logout'
+    });
+  }
+};
 
 module.exports = {
   createUser,
@@ -173,5 +201,6 @@ module.exports = {
   deleteUser,
   getAllUser,
   getDetailsUser,
-  refreshToken
+  refreshToken,
+  logoutUser
 };
