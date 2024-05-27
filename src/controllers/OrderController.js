@@ -1,5 +1,6 @@
 const OrderService = require("../services/OrderService");
 const Order = require("../models/OrderProduct");
+const { response } = require("express");
 
 const CreateOrder = async (req, res) => {
   try {
@@ -64,8 +65,40 @@ const GetOrdersByUserId = async (req, res) => {
     }
   };
   
-
+const getAllOrder = async (req, res) => {
+    try {
+        const data = await OrderService.getAllOrder()
+        return res.status(200).json(data)
+    } catch (e) {
+        return res.status(404).json({
+            message: 'e',
+          });
+    }
+}
+const updateOrder = async (req, res) => {
+  try {
+      const userId1 = req.params.userId
+      console.log(userId1)
+      const data = req.body
+      console.log(data)
+      if (!userId1) {
+          return res.status(200).json({
+              status: 'ERR',
+              message: 'The orderId is required'
+              
+          })
+      }
+      const response = await OrderService.updateOrder(userId1, data)
+      return res.status(200).json(response)
+  } catch (e) {
+      return res.status(404).json({
+          message: 'adadad'
+      })
+  }
+}
 module.exports = {
   CreateOrder,
   GetOrdersByUserId,
+  getAllOrder,
+  updateOrder
 };

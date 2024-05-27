@@ -33,8 +33,6 @@ const CreateOrder = (newOrder) => {
   });
 };
 
-
-
 const getOrdersByUserId = async (userId) => {
   try {
     const orders = await Order.find({ user: userId });
@@ -45,7 +43,50 @@ const getOrdersByUserId = async (userId) => {
   }
 };
 
+const getAllOrder = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const allOrder = await Order.find();
+      resolve({
+        status: "OK",
+        message: "List all order",
+        data: allOrder,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const updateOrder = (userId, updatedOrder) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const order = await Order.findByIdAndUpdate({ user: userId }, updatedOrder, { new: true });
+      if (order) {
+        resolve({
+          status: "OK",
+          message: "Order updated successfully",
+          data: order,
+        });
+      } else {
+        reject({
+          status: "ERR",
+          message: "Order not found",
+        });
+      }
+    } catch (error) {
+      reject({
+        status: "ERR",
+        message: "Error updating order",
+        error: error.message,
+      });
+    }
+  });
+};
+
 module.exports = {
   CreateOrder,
   getOrdersByUserId,
+  getAllOrder,
+  updateOrder,
 };
