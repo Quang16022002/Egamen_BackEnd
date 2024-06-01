@@ -50,6 +50,7 @@ const createProduct = (newProduct) => {
 };
 
 const updateProduct = (id, data) => {
+  
   return new Promise(async (resolve, reject) => {
     try {
       const checkProduct = await Product.findOne({

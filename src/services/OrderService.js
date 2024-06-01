@@ -58,10 +58,17 @@ const getAllOrder = () => {
   });
 };
 
-const updateOrder = (userId, updatedOrder) => {
+const updateOrder = (userId, orderId, updatedOrder) => {
+  console.log(userId, orderId);
   return new Promise(async (resolve, reject) => {
     try {
-      const order = await Order.findByIdAndUpdate({ user: userId }, updatedOrder, { new: true });
+      // Tìm đơn hàng cụ thể dựa trên userId và orderId và cập nhật thông tin
+      const order = await Order.findOneAndUpdate(
+        { user: userId, _id: orderId },  // Điều kiện tìm kiếm
+        { $set: updatedOrder },  // Dữ liệu cập nhật
+        { new: true }  // Trả về dữ liệu mới sau khi cập nhật
+      );
+
       if (order) {
         resolve({
           status: "OK",
@@ -83,10 +90,39 @@ const updateOrder = (userId, updatedOrder) => {
     }
   });
 };
+const deleteOrder = (userId, orderId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const order = await Order.findOneAndDelete({ user: userId, _id: orderId });
+
+      if (order) {
+        resolve({
+          status: "OK",
+          message: "Order deleted successfully",
+          data: order,
+        });
+      } else {
+        reject({
+          status: "ERR",
+          message: "Order not found",
+        });
+      }
+    } catch (error) {
+      reject({
+        status: "ERR",
+        message: "Error deleting order",
+        error: error.message,
+      });
+    }
+  });
+};
+
+
 
 module.exports = {
   CreateOrder,
   getOrdersByUserId,
   getAllOrder,
   updateOrder,
+  deleteOrder
 };
