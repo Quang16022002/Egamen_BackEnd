@@ -3,7 +3,18 @@ const { genneralAccessToken, genneralRefreshToken } = require("./jwtServices");
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
-    const { name, nickname, email, password, confirmPassword, phone, avatar, address } = newUser;
+    const {
+      name,
+      nickname,
+      gender,
+      email,
+      password,
+      confirmPassword,
+      dob,
+      phone,
+      avatar,
+      address,
+    } = newUser;
     try {
       // Kiểm tra xem email đã tồn tại hay chưa
       const checkUser = await User.findOne({ email: email });
@@ -20,17 +31,19 @@ const createUser = (newUser) => {
         nickname,
         email,
         password,
+        gender,
         confirmPassword,
         phone,
+        dob,
         avatar,
-        address
+        address,
       });
 
       // Nếu tạo thành công, thêm người dùng vào đầu danh sách
       if (createdUser) {
         // Giả sử bạn có một mảng người dùng hiện tại trong cơ sở dữ liệu
         let existingUsers = await User.find({}).sort({ _id: -1 }).exec(); // Lấy danh sách người dùng hiện tại và sắp xếp ngược lại (mới nhất lên đầu)
-        
+
         // Thêm người dùng mới vào đầu danh sách
         existingUsers.unshift(createdUser);
 
@@ -52,7 +65,6 @@ const createUser = (newUser) => {
     }
   });
 };
-
 
 const loginUser = (userLogin) => {
   return new Promise(async (resolve, reject) => {
@@ -158,7 +170,6 @@ const getAllUser = () => {
   });
 };
 
-
 const getDetailsUser = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -183,7 +194,6 @@ const getDetailsUser = (id) => {
 const refreshTokenService = (token) => {
   return new Promise(async (resolve, reject) => {
     try {
- 
       console.log("token", token);
       resolve({
         status: "OK",
