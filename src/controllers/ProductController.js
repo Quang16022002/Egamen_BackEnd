@@ -1,7 +1,7 @@
 const ProductService = require("../services/ProductService");
 const createProduct = async (req, res) => {
   try {
-    const { name, image, type, price, countInStock,rating,description, original_price } = req.body;
+    const { name, image, type, price, countInStock,rating,description, original_price, size, color } = req.body;
    
  
     if (!name ) {

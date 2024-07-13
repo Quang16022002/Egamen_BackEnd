@@ -8,7 +8,7 @@ const {
 
 router.post("/create", OrderController.CreateOrder);
 router.get("/user/:userId", OrderController.GetOrdersByUserId);
-router.get("/getAllOrder", authMiddleware, OrderController.getAllOrder);
+router.get("/getAllOrder", OrderController.getAllOrder);
 router.put("/update/:userId/:orderId", OrderController.updateOrder);
 router.delete(
   "/delete/:userId/:orderId",
