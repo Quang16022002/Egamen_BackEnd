@@ -10,8 +10,10 @@ const productSchema = new mongoose.Schema(
     rating: { type: Number, required: true },
     description: { type: String },
     original_price: { type: String, required: true },
-    size:[{ type: String, required: true }],
-    color:[{ type: String, required: true }]
+    size: [{ type: String, required: true }],
+    color: [{ type: String, required: true }],
+    isFeatured: { type: Boolean, default: false }, 
+    isFavorite: { type: Boolean, default: false }, 
   },
   {
     timestamps: true,
