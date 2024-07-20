@@ -6,7 +6,7 @@ const { authMiddleware } = require('../middleware/authMiddleware')
 
 
 router.post('/create', ProductController.createProduct)
-router.put('/update/:id', authMiddleware, ProductController.updateProduct)
+router.put('/update/:id', ProductController.updateProduct)
 router.delete('/delete-product/:id',authMiddleware,  ProductController.deleteProduct)
 router.get('/getAll', ProductController.getAllProduct)
 router.get('/get-details/:id', ProductController.getDetailsProduct)

@@ -4,7 +4,6 @@ const { response } = require("express");
 
 const CreateOrder = async (req, res) => {
   try {
-    console.log('req', req.body)
     const {
       paymentMethod,
       totalPrice,

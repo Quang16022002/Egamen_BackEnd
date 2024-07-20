@@ -5,6 +5,38 @@ const CreateOrder = (newOrder) => {
   return new Promise(async (resolve, reject) => {
     const { orderItems, paymentMethod, totalPrice, fullName, address, phone, user } = newOrder;
     try {
+      const promises = orderItems.map(async (order) => {
+        const productData = await Product.findOneAndUpdate(
+          {
+            _id: order.product,
+            countInStock: { $gte: order.amount }
+          },
+          {
+            $inc: {
+              countInStock: -order.amount
+            }
+          },
+          { new: true }
+        );
+
+        if (productData) {
+          return null; 
+        } else {
+          return order.product; 
+        }
+      });
+
+      const failedProducts = await Promise.all(promises);
+
+      const errors = failedProducts.filter((product) => product !== null);
+
+      if (errors.length > 0) {
+        return resolve({
+          status: "ERR",
+          message: "Some products failed to update stock",
+          data: errors,
+        });
+      }
 
       const createOrder = await Order.create({
         orderItems,
@@ -21,8 +53,12 @@ const CreateOrder = (newOrder) => {
       if (createOrder) {
         resolve({
           status: "OK",
-          message: "SUCCESS",
-          data: createOrder,
+          message: "Order created successfully",
+        });
+      } else {
+        reject({
+          status: "ERR",
+          message: "Failed to create order",
         });
       }
     } catch (e) {
@@ -92,6 +128,7 @@ const updateOrder = (userId, orderId, updatedOrder) => {
     }
   });
 };
+
 const deleteOrder = (userId, orderId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -118,8 +155,6 @@ const deleteOrder = (userId, orderId) => {
     }
   });
 };
-
-
 
 module.exports = {
   CreateOrder,
