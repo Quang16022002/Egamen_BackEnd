@@ -23,6 +23,17 @@ const addReview = async (req, res) => {
   }
 };
 
+const getReviewsByProductIdController = async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    const result = await ReviewService.getReviewsByProductId(productId);
+    res.status(result.status === "OK" ? 200 : 404).json(result);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 module.exports = {
   addReview,
+  getReviewsByProductIdController
 };
